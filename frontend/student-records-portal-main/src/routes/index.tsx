@@ -60,8 +60,7 @@ function StudentsIndex() {
             Student directory
           </h1>
           <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-            A complete record of enrolled students. Use the search field to locate a record, or 
-            add a new student to the registry.
+            A complete record of enrolled students. Use the search field to locate a record, or add a new student to the registry.
           </p>
         </div>
         <Link
