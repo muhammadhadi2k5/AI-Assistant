@@ -1,3 +1,4 @@
+import path from 'node:path';
 import express, { type Request, type Response } from 'express';
 import { simulateApiCall } from './api';
 import { Repository } from './repository';
@@ -22,9 +23,11 @@ function isCreateStudentPayload(body: unknown): body is CreateStudentDTO {
   );
 }
 
-export function createApp() {
+export function createApp(options?: { dataFilePath?: string }) {
   const app = express();
-  const studentRepo = new Repository<Student>();
+  const defaultDataFilePath = path.resolve(__dirname, '..', 'data', 'students.json');
+  const dataFilePath = options?.dataFilePath ?? defaultDataFilePath;
+  const studentRepo = new Repository<Student>(dataFilePath);
 
   app.use(express.json());
 

@@ -1,10 +1,11 @@
+import path from "node:path";
 import readline from "readline";
 import { Student } from "./models/student";
 import { Repository } from "./repository";
 import { validateStudentInput, validateName, validateAge, validateEmail } from "./validation";
 import { simulateApiCall } from "./api";
 
-const studentRepo = new Repository<Student>();
+const studentRepo = new Repository<Student>(path.resolve(__dirname, "..", "data", "students.json"));
 
 const rl = readline.createInterface({
     input: process.stdin,
