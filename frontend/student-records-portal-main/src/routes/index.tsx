@@ -84,7 +84,7 @@ function StudentsIndex() {
         </p>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-md border border-border bg-card shadow-[var(--shadow-card)]">
+      <div className="mt-4 overflow-x-auto rounded-md border border-border bg-card shadow-[var(--shadow-card)]">
         {isLoading ? (
           <div className="p-10 text-center text-sm text-muted-foreground">Loading records…</div>
         ) : isError ? (
