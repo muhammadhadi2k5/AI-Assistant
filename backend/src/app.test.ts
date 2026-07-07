@@ -13,18 +13,27 @@ test('creates and lists students through the API', async () => {
 
   const createResponse = await request(app)
     .post('/students')
-    .send({ name: 'Hadi', age: 20, email: 'hadi@example.com' })
+    .send({
+      firstName: 'Carol',
+      lastName: 'Test',
+      email: 'carol@example.com',
+      studentId: 'S1003',
+      program: 'Business Administration',
+      year: 1,
+      status: 'Graduated',
+      enrolledAt: '2026-01-15',
+    })
     .expect(201);
 
-  assert.equal(createResponse.body.name, 'Hadi');
-  assert.equal(createResponse.body.email, 'hadi@example.com');
+  assert.equal(createResponse.body.firstName, 'Carol');
+  assert.equal(createResponse.body.email, 'carol@example.com');
 
   const listResponse = await request(app)
     .get('/students')
     .expect(200);
 
   assert.equal(listResponse.body.length, 1);
-  assert.equal(listResponse.body[0].name, 'Hadi');
+  assert.equal(listResponse.body[0].firstName, 'Carol');
 
   fs.rmSync(tempDir, { recursive: true, force: true });
 });
@@ -36,10 +45,20 @@ test('persists students to disk between app instances', async () => {
   const appOne = createApp({ dataFilePath: dataFile });
   const createResponse = await request(appOne)
     .post('/students')
-    .send({ name: 'Alice', age: 22, email: 'alice@example.com' })
+    .send({
+      firstName: 'Hadi',
+      lastName: 'Test',
+      email: 'hadi@example.com',
+      studentId: 'S1001',
+      program: 'Computer Science',
+      year: 1,
+      status: 'Active',
+      enrolledAt: '2026-08-15',
+    })
+
     .expect(201);
 
-  assert.equal(createResponse.body.name, 'Alice');
+  assert.equal(createResponse.body.firstName, 'Hadi');
 
   const appTwo = createApp({ dataFilePath: dataFile });
   const listResponse = await request(appTwo)
@@ -47,7 +66,7 @@ test('persists students to disk between app instances', async () => {
     .expect(200);
 
   assert.equal(listResponse.body.length, 1);
-  assert.equal(listResponse.body[0].name, 'Alice');
+  assert.equal(listResponse.body[0].firstName, 'Hadi');
 
   fs.rmSync(tempDir, { recursive: true, force: true });
 });
@@ -63,7 +82,16 @@ test('writes to the project data file even when the current working directory ch
     const app = createApp();
     await request(app)
       .post('/students')
-      .send({ name: 'Carol', age: 24, email: 'carol@example.com' })
+      .send({
+        firstName: 'Alice',
+        lastName: 'Test',
+        email: 'Alice@example.com',
+        studentId: 'S1002',
+        program: 'Visual Arts',
+        year: 3,
+        status: 'On Leave',
+        enrolledAt: '2026-08-15',
+      })
       .expect(201);
 
     assert.equal(fs.existsSync(expectedFile), true);
