@@ -17,8 +17,8 @@ export function validateAge(age: number): void {
         throw new Error("Age must be a positive number.");
     }
 
-    if (age > 120) {
-        throw new Error("Age must be a realistic number (120 or less).");
+    if (age > 100) {
+        throw new Error("Age must be a realistic number (100 or less).");
     }
 }
 
