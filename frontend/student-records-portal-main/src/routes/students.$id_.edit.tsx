@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { StudentForm } from "@/components/student-form";
 import { getStudent, updateStudent } from "@/lib/students-api";
 
-export const Route = createFileRoute("/students/$id/edit")({
+export const Route = createFileRoute("/students/$id_/edit")({
   component: EditStudent,
 });
 

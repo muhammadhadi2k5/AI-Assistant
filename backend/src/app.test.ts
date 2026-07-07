@@ -75,6 +75,7 @@ test('writes to the project data file even when the current working directory ch
   const originalCwd = process.cwd();
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'students-cwd-'));
   const expectedFile = path.resolve(__dirname, '..', 'data', 'students.json');
+  const originalContent = fs.existsSync(expectedFile) ? fs.readFileSync(expectedFile, 'utf8') : null;
 
   process.chdir(tempDir);
 
@@ -98,5 +99,11 @@ test('writes to the project data file even when the current working directory ch
   } finally {
     process.chdir(originalCwd);
     fs.rmSync(tempDir, { recursive: true, force: true });
+
+    if (originalContent === null) {
+      fs.rmSync(expectedFile, { force: true });
+    } else {
+      fs.writeFileSync(expectedFile, originalContent);
+    }
   }
 });
