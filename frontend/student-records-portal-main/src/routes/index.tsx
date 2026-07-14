@@ -2,6 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { deleteStudent, listStudents, type Student } from "@/lib/students-api";
+import {
+  addSearchHistoryEntry,
+  clearSearchHistory,
+  getSearchHistory,
+  type SearchHistoryEntry,
+} from "@/lib/search-history";
 
 export const Route = createFileRoute("/")({
   component: StudentsIndex,
@@ -21,6 +27,12 @@ function StudentsIndex() {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [history, setHistory] = useState<SearchHistoryEntry[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+
+  useEffect(() => {
+    setHistory(getSearchHistory());
+  }, []);
 
   useEffect(() => {
     const timeout = setTimeout(() => setDebouncedQuery(query), 300);
@@ -50,6 +62,23 @@ function StudentsIndex() {
     removeMutation.mutate(s.id);
   }
 
+  function recordVisit(s: Student) {
+    if (!query.trim()) return;
+    setHistory(
+      addSearchHistoryEntry({
+        id: s.id,
+        firstName: s.firstName,
+        lastName: s.lastName,
+        studentId: s.studentId,
+        query: query.trim(),
+      }),
+    );
+  }
+
+  function handleClearHistory() {
+    setHistory(clearSearchHistory());
+  }
+
   return (
     <div>
       <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
@@ -76,13 +105,51 @@ function StudentsIndex() {
       </div>
 
       <div className="mt-6 flex items-center justify-between gap-3">
-        <input
-          type="search"
-          placeholder="Search by name, ID, program, or email"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full max-w-sm rounded-md border border-input bg-card px-3 py-2 text-sm outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30"
-        />
+        <div className="relative w-full max-w-sm">
+          <input
+            type="search"
+            placeholder="Search by name, ID, program, or email"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setShowHistory(true)}
+            onBlur={() => setTimeout(() => setShowHistory(false), 150)}
+            className="w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30"
+          />
+          {showHistory && history.length > 0 ? (
+            <div className="absolute z-10 mt-1 w-full rounded-md border border-border bg-secondary py-1 shadow-lg">
+              <div className="flex items-center justify-between px-3 py-1.5">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">Recent</p>
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={handleClearHistory}
+                  className="text-xs text-muted-foreground hover:text-destructive hover:underline"
+                >
+                  Clear
+                </button>
+              </div>
+              <ul>
+                {history.map((h) => (
+                  <li key={h.id}>
+                    <Link
+                      to="/students/$id"
+                      params={{ id: h.id }}
+                      onMouseDown={(e) => e.preventDefault()}
+                      className="flex items-center justify-between px-3 py-1.5 text-sm hover:bg-card"
+                    >
+                      <span className="font-medium text-foreground">
+                        {h.lastName}, {h.firstName}
+                      </span>
+                      <span className="ml-2 truncate text-xs text-muted-foreground">
+                        “{h.query}”
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </div>
         <p className="text-xs text-muted-foreground">
           {total > 0
             ? `${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, total)} of ${total}`
@@ -120,6 +187,7 @@ function StudentsIndex() {
                     <Link
                       to="/students/$id"
                       params={{ id: s.id }}
+                      onClick={() => recordVisit(s)}
                       className="font-medium text-foreground hover:text-primary"
                     >
                       {s.lastName}, {s.firstName}
@@ -141,6 +209,7 @@ function StudentsIndex() {
                       <Link
                         to="/students/$id"
                         params={{ id: s.id }}
+                        onClick={() => recordVisit(s)}
                         className="text-primary hover:underline"
                       >
                         View
@@ -148,6 +217,7 @@ function StudentsIndex() {
                       <Link
                         to="/students/$id/edit"
                         params={{ id: s.id }}
+                        onClick={() => recordVisit(s)}
                         className="text-primary hover:underline"
                       >
                         Edit
