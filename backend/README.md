@@ -37,11 +37,32 @@ A small student management backend built with TypeScript and Express. This is th
 
 ## API endpoints
 
-- `GET /students` - list all students
+- `GET /students` - list students, paginated (see below)
 - `GET /students/:id` - get student by ID
 - `POST /students` - create a new student
 - `PUT /students/:id` - update a student
 - `DELETE /students/:id` - delete a student
+
+### GET /students query params
+
+| Param    | Default | Notes                                                    |
+|----------|---------|-----------------------------------------------------------|
+| `page`   | `1`     | Positive integer. Out-of-range pages return an empty `data` array (not an error). |
+| `limit`  | `10`    | Positive integer, max `100`.                              |
+| `search` | -       | Case-insensitive match across first name, last name, email, student ID, and program. |
+
+Invalid `page`/`limit` (non-integers, or out of the allowed range) return `400`.
+
+Response shape:
+```json
+{
+  "data": [ /* StudentRecord[] for this page */ ],
+  "page": 1,
+  "limit": 10,
+  "total": 15,
+  "totalPages": 2
+}
+```
 
 ## Example POST request
 

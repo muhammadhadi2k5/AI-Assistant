@@ -12,6 +12,20 @@ export type Student = {
 
 export type StudentInput = Omit<Student, "id">;
 
+export type ListStudentsParams = {
+  page?: number;
+  limit?: number;
+  search?: string;
+};
+
+export type PaginatedStudents = {
+  data: Student[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+};
+
 const API_BASE = (import.meta as any).env?.VITE_API_BASE_URL as string | undefined;
 const STORAGE_KEY = "student-registry:v1";
 
@@ -82,13 +96,35 @@ async function delay<T>(value: T): Promise<T> {
 
 // ---- API ----
 
-export async function listStudents(): Promise<Student[]> {
+export async function listStudents(params: ListStudentsParams = {}): Promise<PaginatedStudents> {
+  const page = params.page ?? 1;
+  const limit = params.limit ?? 10;
+  const search = params.search?.trim() ?? "";
+
   if (API_BASE) {
-    const res = await fetch(`${API_BASE}/students`);
+    const query = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (search) query.set("search", search);
+    const res = await fetch(`${API_BASE}/students?${query}`);
     if (!res.ok) throw new Error("Failed to load students");
     return res.json();
   }
-  return delay(readLocal());
+
+  const all = readLocal();
+  const filtered = search
+    ? all.filter((s) =>
+        [s.firstName, s.lastName, s.email, s.studentId, s.program]
+          .join(" ")
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+      )
+    : all;
+
+  const total = filtered.length;
+  const totalPages = total === 0 ? 0 : Math.ceil(total / limit);
+  const start = (page - 1) * limit;
+  const data = filtered.slice(start, start + limit);
+
+  return delay({ data, page, limit, total, totalPages });
 }
 
 export async function getStudent(id: string): Promise<Student> {

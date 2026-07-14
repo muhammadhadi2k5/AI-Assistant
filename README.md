@@ -72,7 +72,7 @@ Base URL: `http://localhost:3000`
 
 | Method | Path             | Description              |
 |--------|------------------|--------------------------|
-| GET    | `/students`      | List all students        |
+| GET    | `/students`      | List students, paginated (`?page=&limit=&search=`) — see [backend README](backend/README.md#get-students-query-params) |
 | GET    | `/students/:id`  | Get one student by ID    |
 | POST   | `/students`      | Create a student         |
 | PUT    | `/students/:id`  | Update a student         |
