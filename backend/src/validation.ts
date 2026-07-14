@@ -30,6 +30,9 @@ export function validateEmail(email: string): void {
     if (!email.includes("@")) {
         throw new Error("Email must contain an '@' symbol.");
     }
+    if (!email.includes(".com")){
+        throw new Error("Email must contain a valid domain (e.g. '.com').");
+    }
 
     if (!email.includes(".")) {
         throw new Error("Email must contain a valid domain (e.g. '.com').");
