@@ -1,23 +1,25 @@
 # Student Records Portal
 
-A student records management system, built during a software development internship at Highnoon Laboratories LTD. The project was scoped as a 16-week capstone (compressed to a 6-week execution plan) meant to grow from a basic CRUD API into a full AI-powered campus assistant — this repo reflects the point at which development was stopped.
+This is a student records app I've been building during my software development internship at Highnoon Laboratories. The original roadmap was a 16-week plan (compressed into 6 weeks) that was supposed to grow this into a full AI campus assistant, complete with a chatbot, voice interaction, document Q&A, and realtime features. For now, development has stayed on the records-management stage, so that's what actually lives in this repo.
 
-## Project status
+## What's working right now
 
-**Stopped partway through the planned scope.** What's actually implemented and working:
+- Full CRUD for student records (create, list, view, update, delete) through a TypeScript/Express API
+- Pagination, free-text search, sortable columns, and filters for status/program/year
+- A recent-searches dropdown on the search bar
+- Per-field form validation that tells you what format is expected (e.g. "Enter a valid email, e.g. name@example.com")
+- Duplicate Student ID detection — it ignores dashes, spaces, and other formatting and just compares the digits
+- A React frontend for browsing and managing the directory
+- Backend tests (`node:test` + supertest)
 
-- A TypeScript/Express REST API for student records (create, list, get by ID, update, delete)
-- Input validation with clear 400 error responses
-- File-backed persistence (JSON file, not a real database)
-- A React/TanStack Start frontend (student directory, view/edit/delete/add student, search)
-- A test suite (`node:test` + supertest) covering the API's core behavior
+Records live in a JSON file (`backend/data/students.json`), not a real database. So this is closer to "a solid student records manager" than the AI campus assistant the roadmap describes — auth, an actual database, the AI/voice/RAG features, realtime updates, and deployment are all still unbuilt.
 
-**Planned but not implemented:** authentication, a real database (still a JSON file, not SQL/ERD-backed), the AI chatbot / prompt engineering / conversation memory / document RAG / voice assistant features, Socket.IO realtime updates, caching/performance work, Docker deployment, and OpenAPI documentation.
 ## Tech stack
 
 - **Backend:** Node.js, TypeScript (strict mode), Express, file-based persistence
 - **Frontend:** React, TanStack Start/Router, Vite, Tailwind CSS
-- **Tooling:** ESLint, Prettier, `node:test` + supertest, Postman (for manual API testing)
+- **Testing:** `node:test` + supertest
+- **Tooling:** ESLint, Prettier, Postman for manual API checks
 
 ## Project structure
 
@@ -38,30 +40,30 @@ AI-Assistant/
 └── package.json                     Root convenience script to run both at once
 ```
 
-## How to run it
+## Running it
 
-You'll need Node.js and npm installed.
+You'll need Node.js and npm.
 
-**1. Install dependencies** (three separate installs — backend, frontend, and the root dev-runner):
+**1. Install dependencies** (backend, frontend, and the root dev-runner are separate installs):
 ```bash
 npm install
 npm install --prefix backend
 npm install --prefix frontend/student-records-portal-main
 ```
 
-**2. Start both the backend and frontend together**, from the repo root:
+**2. Start everything at once** from the repo root:
 ```bash
 npm run dev
 ```
-This runs the backend (`http://localhost:3000`) and frontend (`http://localhost:8080`) concurrently, with labeled output. Open `http://localhost:8080` in a browser.
+This runs the backend (`http://localhost:3000`) and frontend (`http://localhost:8080`) together, with labeled output. Open `http://localhost:8080` in a browser.
 
-If you'd rather run them separately, in two terminals:
+Or run them separately in two terminals:
 ```bash
 npm run dev --prefix backend
 npm run dev --prefix frontend/student-records-portal-main
 ```
 
-**3. Run the backend test suite:**
+**3. Run the backend tests:**
 ```bash
 npm test --prefix backend
 ```
@@ -72,10 +74,8 @@ Base URL: `http://localhost:3000`
 
 | Method | Path             | Description              |
 |--------|------------------|--------------------------|
-| GET    | `/students`      | List students, paginated (`?page=&limit=&search=`) — see [backend README](backend/README.md#get-students-query-params) |
+| GET    | `/students`      | List students — supports pagination, search, sort, and filters. See [backend README](backend/README.md#get-students-query-params) for the query params. |
 | GET    | `/students/:id`  | Get one student by ID    |
 | POST   | `/students`      | Create a student         |
 | PUT    | `/students/:id`  | Update a student         |
 | DELETE | `/students/:id`  | Delete a student         |
-
-
