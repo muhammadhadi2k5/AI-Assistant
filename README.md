@@ -78,17 +78,4 @@ Base URL: `http://localhost:3000`
 | PUT    | `/students/:id`  | Update a student         |
 | DELETE | `/students/:id`  | Delete a student         |
 
-Student shape (`POST`/`PUT` body — `id` is server-generated, don't send it):
-```json
-{
-  "firstName": "Ada",
-  "lastName": "Lovelace",
-  "email": "ada@example.com",
-  "studentId": "2024-1001",
-  "program": "Computer Science",
-  "year": 2,
-  "status": "Active",
-  "enrolledAt": "2024-09-01"
-}
-```
-`status` must be one of `"Active"`, `"On Leave"`, `"Graduated"`, `"Withdrawn"`.
+
