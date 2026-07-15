@@ -97,6 +97,9 @@ export function createApp(options?: { dataFilePath?: string }) {
           }
           return String(left).localeCompare(String(right)) * direction;
         });
+      } else {
+        // No explicit sort: default to newest-created first (records are stored oldest-first).
+        filtered = [...filtered].reverse();
       }
 
       const total = filtered.length;

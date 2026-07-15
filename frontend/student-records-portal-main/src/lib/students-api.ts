@@ -169,6 +169,8 @@ export async function listStudents(params: ListStudentsParams = {}): Promise<Pag
       return String(left).localeCompare(String(right)) * direction;
     });
   }
+  // No explicit sort: createStudent already prepends new records, so `filtered`
+  // is newest-first by construction here (unlike the backend, which appends).
 
   const total = filtered.length;
   const totalPages = total === 0 ? 0 : Math.ceil(total / limit);

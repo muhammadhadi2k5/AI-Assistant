@@ -117,6 +117,36 @@ test('paginates, searches, and validates query params on GET /students', async (
   fs.rmSync(tempDir, { recursive: true, force: true });
 });
 
+test('defaults to newest-created first when no sort is specified', async () => {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'students-default-order-'));
+  const dataFile = path.join(tempDir, 'students.json');
+  const app = createApp({ dataFilePath: dataFile });
+
+  for (const firstName of ['First', 'Second', 'Third']) {
+    await request(app)
+      .post('/students')
+      .send({
+        firstName,
+        lastName: 'Test',
+        email: `${firstName.toLowerCase()}@example.com`,
+        studentId: `S-${firstName}`,
+        program: 'Computer Science',
+        year: 1,
+        status: 'Active',
+        enrolledAt: '2026-01-15',
+      })
+      .expect(201);
+  }
+
+  const response = await request(app).get('/students').expect(200);
+  assert.deepEqual(
+    response.body.data.map((s: { firstName: string }) => s.firstName),
+    ['Third', 'Second', 'First'],
+  );
+
+  fs.rmSync(tempDir, { recursive: true, force: true });
+});
+
 test('sorts and filters students on GET /students', async () => {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'students-sort-'));
   const dataFile = path.join(tempDir, 'students.json');
